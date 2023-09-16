@@ -2,18 +2,15 @@ import googlemaps
 from datetime import datetime
 import geopy.distance
 import os
-from dotenv import load_dotenv
-
-load_dotenv() 
 
 # Initialize the Google Maps client using an API key from the environment variables
 gmaps = googlemaps.Client(key=os.environ['GOOGLE_MAPS_API'])
 
 # Function to find the closest point on a route to a given location
-def find_closest_point_on_route(route_coordinates, point):
+def find_closest_point_on_route(route_polyline, point):
 
     # Decode the polyline representing the route into a list of coordinates
-    decoded_route = decode_polyline(route_coordinates)
+    decoded_route = decode_polyline(route_polyline)
     closest_distance = float('inf')
     closest_point = (None, None)
 
@@ -62,6 +59,23 @@ def decode_polyline(polyline):
 
     return coords
 
+def calculate_distance_of_polyline(polyline):
+    # Decode the polyline to get a list of coordinates
+    decoded_route = decode_polyline(polyline)
+    
+    total_distance = 0.0
+
+    # Iterate through the decoded coordinates to calculate distances
+    for i in range(len(decoded_route) - 1):
+        coord1 = decoded_route[i]
+        coord2 = decoded_route[i + 1]
+        
+        # Calculate the distance between consecutive coordinates
+        distance = geopy.distance.distance(coord1, coord2).meters
+        total_distance += distance
+
+    return total_distance
+
 def getRoute(route_start, route_end):
     return gmaps.directions(route_start, route_end, mode="driving", departure_time=datetime.now())
 
@@ -69,10 +83,13 @@ def getRoute(route_start, route_end):
 def getClosestRouteDirections(route, point):
 
     # Get driving directions from route_start to route_end
-    route_coordinates = route[0]["overview_polyline"]["points"]
+    if isinstance(route, str):
+        route_polyline = route
+    else:
+        route_polyline = route[0]["overview_polyline"]["points"]
 
     # Find the closest point on the route to the user's location (point)
-    closest_point_to_start = find_closest_point_on_route(route_coordinates, point)
+    closest_point_to_start = find_closest_point_on_route(route_polyline, point)
 
     # Get walking directions from point to the closest point on the route
     new_route = gmaps.directions(
