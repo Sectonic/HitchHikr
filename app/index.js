@@ -4,13 +4,26 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Image } from 'expo-image';
 import MapStyles from '../assets/map_styles.json';
-import { Stack } from 'expo-router';
-import { useSession } from '../lib/provider';
+import { Stack, useRouter } from 'expo-router';
 import LoadingScreen from '../components/loadingscreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import COLORS from '../lib/colors';
+import { Redirect } from 'expo-router';
+import { getStorageItem } from '../lib/secureStorage';
 
 export default function Page() {
-    const { session, isLoading } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        (async () => {
+            const session = await getStorageItem('session');
+            if (session) {
+                router.push('/main');
+            } else {
+                router.push('/authentication');
+            }
+        })();
+    }, [])
 
     // const [initialRegion, setInitialRegion] = useState(null);
     
@@ -33,9 +46,7 @@ export default function Page() {
     //     })();
     // }, []);
 
-    if (isLoading) {
-        return <LoadingScreen />
-    }
+    return <LoadingScreen />
     
     // return (
     //     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -51,17 +62,5 @@ export default function Page() {
     //         </MapView>
     //     </View>
     // );
-
-    return (
-        <SafeAreaView style={{flex: 1, paddingHorizontal: 20}} >
-            <Stack.Screen
-                options={{ headerShown: false }} 
-            />
-            <Text style={{fontSize: 30, fontWeight: 700}} >HitchHikr</Text>
-            <View style={{}} >
-                <Text>{session || 'No Session'}</Text>
-            </View>
-        </SafeAreaView>
-    )
 
 }

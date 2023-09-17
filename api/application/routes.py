@@ -23,13 +23,13 @@ def check_user_id(encrypted_user_id):
 @app.route("/maps/get_suitable_carpools", methods=['GET'])
 def get_suitable_carpools():
     # Check if required query parameters exist in the request
-    check_all_params(['userLocation', 'userDestination'])
+    check_all_params(['userLocation', 'userDestination', 'walkingDistance'])
 
     # Parse query parameters and validate their types
     try:
         user_location = ast.literal_eval(request.args.get('userLocation'))
         user_destination = ast.literal_eval(request.args.get('userDestination'))
-        user_maximum_walking_distance = int(request.args.get('userDestination'))
+        user_maximum_walking_distance = int(request.args.get('walkingDistance'))
     except ValueError:
         # Handle parsing errors
         abort(400, description="An error occurred while parsing user inputs.")
@@ -70,7 +70,7 @@ def get_suitable_carpools():
                     suitable_carpools.append(carpool)
 
     # Return the list of suitable carpools and a 200 OK status code
-    return suitable_carpools, 200     
+    return suitable_carpools, 200
 
 # Register
 @app.route("/accounts/register", methods=['POST'])
