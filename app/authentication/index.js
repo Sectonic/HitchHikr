@@ -2,7 +2,7 @@ import { Text, SafeAreaView, View, TouchableOpacity } from "react-native";
 import COLORS from "../../lib/colors";
 import { Link, Stack, useRouter } from "expo-router";
 
-export default function Layout() {
+export default function Page() {
     const router = useRouter();
     
     return (
