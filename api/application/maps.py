@@ -2,7 +2,6 @@ import googlemaps
 from datetime import datetime
 import geopy.distance
 import os
-import math
 
 gmaps = googlemaps.Client(key=os.environ['GOOGLE_MAPS_API'])
 
@@ -105,11 +104,6 @@ def calculate_zoom_level(coord1, coord2):
 
     lat1, lon1 = coord1
     lat2, lon2 = coord2
-
-
-    mid_lat = (lat1 + lat2) / 2
-    mid_lon = (lon1 + lon2) / 2
-
 
     lat_diff = abs(lat1 - lat2)
     lon_diff = abs(lon1 - lon2)
